@@ -1,14 +1,16 @@
 # IINACT_KR
 
 marzent/IINACT를 포크해서 한국 서버용으로 수정한 프로젝트.
+[fexiv](https://github.com/hareeen/fexiv) (macOS용 FFXIV KR 런처)의 Dalamud 파싱 플러그인으로 사용됨.
+csproj의 `~/.fexiv/resources/dalamud/core/` 경로는 fexiv가 관리하는 Dalamud 설치 위치.
 
 ## 구조
 
 - **IINACT_KR** (이 레포): `origin` = hareeen/IINACT_KR
 - **machina** (서브모듈): hareeen/machina 포크, `dalamud` 브랜치 사용
-  - remote `origin` = ravahn/machina (원본)
-  - remote `marzent` = marzent/machina (포크)
-  - remote `mine` = hareeen/machina (내 포크)
+    - remote `origin` = ravahn/machina (원본)
+    - remote `marzent` = marzent/machina (포크)
+    - remote `mine` = hareeen/machina (내 포크)
 
 ## 업스트림 동기화 가이드
 
