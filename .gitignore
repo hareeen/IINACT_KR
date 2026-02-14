@@ -476,3 +476,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Environment variable files
+.env*
+
+# Development environment files
+.direnv
