@@ -23,7 +23,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">
-        <DalamudLibPath>$(HOME)/Library/Application Support/XIV on Mac/dalamud/Hooks/dev/</DalamudLibPath>
+        <DalamudLibPath>$(HOME)/.fexiv/resources/dalamud/core/</DalamudLibPath>
     </PropertyGroup>
 
     <ItemGroup>
