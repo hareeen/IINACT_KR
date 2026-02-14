@@ -1,6 +1,7 @@
 [submodule "machina"]
 	path = machina
-	url = https://github.com/marzent/machina
+	url = https://github.com/hareeen/machina
+	branch = dalamud
 [submodule "OverlayPlugin.Core/resources/act-overlays"]
 	path = OverlayPlugin.Core/resources/act-overlays
 	url = https://github.com/cking/act-overlays
