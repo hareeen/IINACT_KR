@@ -22,7 +22,7 @@ public sealed class Plugin : IDalamudPlugin
     private const string MainWindowCommandName = "/iinact";
     private const string EndEncCommandName = "/endenc";
     public readonly WindowSystem WindowSystem = new("IINACT");
-    
+
     internal IDalamudPluginInterface PluginInterface { get; }
     internal ICommandManager CommandManager { get; }
     internal IClientState ClientState { get; }
@@ -73,24 +73,25 @@ public sealed class Plugin : IDalamudPlugin
         NotificationManager = notificationManager;
         Log = pluginLog;
 
-        OpcodeManager.Instance.SetRegion(DataManager.Language.ToString() == "ChineseSimplified"
-                                             ? GameRegion.Chinese
-                                             : GameRegion.Global);
+        const GameRegion gameRegion = GameRegion.Korean;
+        Log.Information("Game language: {0}, GameRegion: {1}", DataManager.Language, gameRegion);
+        OpcodeManager.Instance.SetRegion(gameRegion);
+        OpcodeManager.Instance.RegionLocked = true;
 
-        var createZoneDownHookManager = Task.Run(() 
+        var createZoneDownHookManager = Task.Run(()
             => new ZoneDownHookManager(NotificationManager, GameInteropProvider));
         Version = Assembly.GetExecutingAssembly().GetName().Version!;
 
         FileDialogManager = new FileDialogManager();
 
         HttpClient = new HttpClient();
-        
+
         var fetchDeps =
             new FetchDependencies.FetchDependencies(Version, PluginInterface.AssemblyLocation.Directory!.FullName,
                                                     DataManager.Language.ToString() == "ChineseSimplified", HttpClient);
-        
+
         fetchDeps.GetFfxivPlugin();
-        
+
         PluginLogTraceListener = new PluginLogTraceListener();
         Trace.Listeners.Add(PluginLogTraceListener);
 
@@ -124,12 +125,12 @@ public sealed class Plugin : IDalamudPlugin
 
         PluginInterface.UiBuilder.Draw += DrawUI;
         PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-        
+
         if (clientState.IsPvP)
             EnterPvP();
         else
             LeavePvP();
-        
+
         ClientState.EnterPvP += EnterPvP;
         ClientState.LeavePvP += LeavePvP;
 
@@ -142,7 +143,7 @@ public sealed class Plugin : IDalamudPlugin
         ClientState.LeavePvP -= LeavePvP;
         IpcProviders.Dispose();
         ZoneDownHookManager.Dispose();
-        
+
         FfxivActPluginWrapper.Dispose();
         OverlayPlugin.DeInitPlugin();
         Trace.Listeners.Remove(PluginLogTraceListener);
@@ -160,7 +161,7 @@ public sealed class Plugin : IDalamudPlugin
     private RainbowMage.OverlayPlugin.PluginMain InitOverlayPlugin()
     {
         var container = new RainbowMage.OverlayPlugin.TinyIoCContainer();
-        
+
         var logger = new RainbowMage.OverlayPlugin.Logger(Log);
         container.Register(logger);
         container.Register<RainbowMage.OverlayPlugin.ILogger>(logger);
@@ -173,7 +174,7 @@ public sealed class Plugin : IDalamudPlugin
             PluginInterface.AssemblyLocation.Directory!.FullName, logger, container);
         container.Register(overlayPlugin);
         Advanced_Combat_Tracker.ActGlobals.oFormActMain.OverlayPluginContainer = container;
-        
+
         Task.Run(() =>
         {
             overlayPlugin.InitPlugin(PluginInterface.ConfigDirectory.FullName);
@@ -197,8 +198,8 @@ public sealed class Plugin : IDalamudPlugin
             Advanced_Combat_Tracker.ActGlobals.oFormActMain.EndCombat(false);
             return;
         }
-            
-        switch (args) 
+
+        switch (args)
         {
             case "start": //deprecated
             case "ws start":
