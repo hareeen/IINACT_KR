@@ -88,7 +88,7 @@ public sealed class Plugin : IDalamudPlugin
 
         var fetchDeps =
             new FetchDependencies.FetchDependencies(Version, PluginInterface.AssemblyLocation.Directory!.FullName,
-                                                    DataManager.Language.ToString() == "ChineseSimplified", HttpClient);
+                                                    FetchDependencies.Region.Korean, HttpClient);
 
         fetchDeps.GetFfxivPlugin();
 

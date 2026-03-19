@@ -2,23 +2,39 @@ using System.IO.Compression;
 
 namespace FetchDependencies;
 
+public enum Region
+{
+    Global,
+    Chinese,
+    Korean
+}
+
 public class FetchDependencies
 {
-    private const string VersionUrlGlobal = "https://www.iinact.com/updater/version";
-    private const string VersionUrlChinese = "https://cninact.diemoe.net/CN解析/版本.txt";
-    private const string PluginUrlGlobal = "https://www.iinact.com/updater/download";
-    private const string PluginUrlChinese = "https://cninact.diemoe.net/CN解析/FFXIV_ACT_Plugin.dll";
+    private static readonly Dictionary<Region, string> VersionUrls = new()
+    {
+        [Region.Global] = "https://www.iinact.com/updater/version",
+        [Region.Chinese] = "https://cninact.diemoe.net/CN解析/版本.txt",
+        [Region.Korean] = "https://iinact.hareen.io/version",
+    };
+
+    private static readonly Dictionary<Region, string> PluginUrls = new()
+    {
+        [Region.Global] = "https://www.iinact.com/updater/download",
+        [Region.Chinese] = "https://cninact.diemoe.net/CN解析/FFXIV_ACT_Plugin.dll",
+        [Region.Korean] = "https://iinact.hareen.io/download",
+    };
 
     private Version PluginVersion { get; }
     private string DependenciesDir { get; }
-    private bool IsChinese { get; }
+    private Region Region { get; }
     private HttpClient HttpClient { get; }
 
-    public FetchDependencies(Version version, string assemblyDir, bool isChinese, HttpClient httpClient)
+    public FetchDependencies(Version version, string assemblyDir, Region region, HttpClient httpClient)
     {
         PluginVersion = version;
         DependenciesDir = assemblyDir;
-        IsChinese = isChinese;
+        Region = region;
         HttpClient = httpClient;
     }
 
@@ -27,16 +43,16 @@ public class FetchDependencies
         var pluginZipPath = Path.Combine(DependenciesDir, "FFXIV_ACT_Plugin.zip");
         var pluginPath = Path.Combine(DependenciesDir, "FFXIV_ACT_Plugin.dll");
         var deucalionPath = Path.Combine(DependenciesDir, "deucalion-1.1.0.distrib.dll");
-        
+
         if (!NeedsUpdate(pluginPath))
             return;
 
-        if (IsChinese)
-            DownloadFile(PluginUrlChinese, pluginPath);
+        if (Region == Region.Chinese)
+            DownloadFile(PluginUrls[Region], pluginPath);
         else
         {
             if (!File.Exists(pluginZipPath))
-                DownloadFile(PluginUrlGlobal, pluginZipPath);
+                DownloadFile(PluginUrls[Region], pluginZipPath);
             try
             {
                 ZipFile.ExtractToDirectory(pluginZipPath, DependenciesDir, true);
@@ -44,7 +60,7 @@ public class FetchDependencies
             catch (InvalidDataException)
             {
                 File.Delete(pluginZipPath);
-                DownloadFile(PluginUrlGlobal, pluginZipPath);
+                DownloadFile(PluginUrls[Region], pluginZipPath);
                 ZipFile.ExtractToDirectory(pluginZipPath, DependenciesDir, true);
             }
             File.Delete(pluginZipPath);
@@ -68,10 +84,10 @@ public class FetchDependencies
 
             if (!plugin.ApiVersionMatches())
                 return true;
-            
+
             using var cancelAfterDelay = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             var remoteVersionString = HttpClient
-                                      .GetStringAsync(IsChinese ? VersionUrlChinese : VersionUrlGlobal,
+                                      .GetStringAsync(VersionUrls[Region],
                                                       cancelAfterDelay.Token).Result;
             var remoteVersion = new Version(remoteVersionString);
             return remoteVersion > plugin.Version;
