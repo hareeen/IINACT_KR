@@ -18,8 +18,8 @@
         dotnet-sdk = pkgs.dotnetCorePackages.sdk_10_0_1xx-bin;
       in {
         devShells.default = pkgs.mkShell {
-          name = "dotnet-shell";
-          meta.description = "Dev environment for .NET 10 Development";
+          name = "iinact-kr";
+          meta.description = "Dev environment for IINACT";
 
           packages = [
             dotnet-sdk
