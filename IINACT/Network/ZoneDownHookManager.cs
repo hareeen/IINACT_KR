@@ -38,7 +38,8 @@ public unsafe class ZoneDownHookManager : IDisposable
         var moduleBase = multiScanner.Module.BaseAddress;
         
         var version = GetRunningGameVersion();
-        if (VersionConstants.Constants.ContainsKey(version))
+        var isGlobal = Machina.FFXIV.Headers.Opcodes.OpcodeManager.Instance.GameRegion == Machina.FFXIV.GameRegion.Global;
+        if (isGlobal && VersionConstants.Constants.ContainsKey(version))
         {
             versionConstants = VersionConstants.ForGameVersion(version);
             unscrambler = UnscramblerFactory.ForGameVersion(version);
