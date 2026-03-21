@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 
 # Development environment files
 .direnv
+
+# Agents
+.claude
