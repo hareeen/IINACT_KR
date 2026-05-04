@@ -32,6 +32,8 @@
           };
 
           shellHook = ''
+            export DALAMUD_HOME="$HOME/.fexiv/resources/dalamud/core"
+
             if [ -z "$IN_NIX_SHELL" ]; then
               export IN_NIX_SHELL=1
               exec ${pkgs.fish}/bin/fish
