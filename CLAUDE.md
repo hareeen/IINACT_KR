@@ -6,11 +6,11 @@ csproj의 `~/.fexiv/resources/dalamud/core/` 경로는 fexiv가 관리하는 Dal
 
 ## 구조
 
-- **IINACT_KR** (이 레포): `origin` = hareeen/IINACT_KR
-- **machina** (서브모듈): hareeen/machina 포크, `dalamud` 브랜치 사용
+- **IINACT_KR** (이 레포): `origin` = aetherfl0w/IINACT_KR
+- **machina** (서브모듈): aetherfl0w/machina 포크, `dalamud` 브랜치 사용
     - remote `origin` = ravahn/machina (원본)
     - remote `marzent` = marzent/machina (포크)
-    - remote `mine` = hareeen/machina (내 포크)
+    - remote `mine` = aetherfl0w/machina (내 포크)
 
 ## 업스트림 동기화 가이드
 
