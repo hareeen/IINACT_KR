@@ -4,6 +4,7 @@ using Advanced_Combat_Tracker;
 using Dalamud.Game;
 using Dalamud.Game.Chat;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using FFXIV_ACT_Plugin;
 using FFXIV_ACT_Plugin.Common;
@@ -109,7 +110,7 @@ public partial class FfxivActPluginWrapper : IDisposable
 
         ffxivActPlugin._dataCollection.StartMemory();
 
-        this.chatGui.ChatMessage += OnChatMessage;
+        SetChatMessageLoggingEnabled(configuration.LogChatMessages);
         ActGlobals.oFormActMain.BeforeLogLineRead += OFormActMain_BeforeLogLineRead;
         serverTimeProcessor.ServerTime = DateTime.Now;
 
@@ -147,11 +148,19 @@ public partial class FfxivActPluginWrapper : IDisposable
         cancellationTokenSource.Cancel();
         cancellationTokenSource.Dispose();
         framework.Update -= MobDataRefresh;
-        chatGui.ChatMessage -= OnChatMessage;
+        SetChatMessageLoggingEnabled(false);
         ActGlobals.oFormActMain.BeforeLogLineRead -= OFormActMain_BeforeLogLineRead;
         ffxivActPlugin.DeInitPlugin();
         ffxivActPlugin.Dispose();
         Marshal.FreeHGlobal(mobData);
+    }
+
+    public void SetChatMessageLoggingEnabled(bool enabled)
+    {
+        chatGui.ChatMessage -= OnChatMessage;
+
+        if (enabled)
+            chatGui.ChatMessage += OnChatMessage;
     }
 
     private void SetupSettingsMediator()
@@ -203,11 +212,17 @@ public partial class FfxivActPluginWrapper : IDisposable
 
     private void OnChatMessage(IHandleableChatMessage message)
     {
-        var evenType = (uint)message.LogKind;
+        var eventType = (uint)message.LogKind;
+        
+        if (message.LogKind == XivChatType.SystemMessage)
+        {
+            eventType |= ((uint)message.TargetKind << 7) | ((uint)message.SourceKind << 11);
+        }
+        
         var player = message.Sender.TextValue;
         var text = message.Message.TextValue.Replace('\r', ' ').Replace('\n', ' ')
                                             .Replace('|', '❘');
-        var line = logFormat.FormatChatMessage(evenType, player, text);
+        var line = logFormat.FormatChatMessage(eventType, player, text);
 
         logOutput.WriteLine(LogMessageType.ChatLog, GameServerTime.CurrentServerTime, line);
     }
